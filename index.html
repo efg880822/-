@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我們的台灣旅遊地圖</title>
+<style>
+:root{--bg:#f6f2ec;--paper:#fff;--ink:#28231f;--muted:#81776e;--line:#e4dcd3;--accent:#765f4b;--soft:#f0e8df;--green:#6f836b;--rose:#a97b78}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
+header{background:linear-gradient(135deg,#fffaf4,#f3ece4);padding:42px 18px 32px;text-align:center;border-bottom:1px solid var(--line)}
+.ey{font-size:11px;letter-spacing:3px;color:#9b8876}.hero h1{font-size:clamp(30px,6vw,52px);margin:7px 0}.hero p{margin:0;color:var(--muted)}
+.wrap{max-width:1180px;margin:auto;padding:18px}.toolbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 16px;cursor:pointer;color:var(--ink)}.btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:18px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:18px}
+.map-panel{min-height:620px}.panel-title{margin:0 0 5px}.sub{font-size:12px;color:var(--muted)}
+.map{position:relative;width:320px;height:520px;margin:16px auto 0}
+.island{position:absolute;inset:0;background:#e9e0d5;clip-path:polygon(52% 0,66% 7%,69% 17%,83% 28%,77% 39%,84% 50%,75% 60%,77% 72%,65% 86%,53% 100%,39% 92%,34% 79%,24% 69%,29% 58%,18% 48%,28% 37%,22% 27%,35% 16%,34% 7%);filter:drop-shadow(0 15px 12px rgba(60,45,30,.14))}
+.pin{position:absolute;transform:translate(-50%,-50%);border:1px solid #d9cec3;background:#fff;border-radius:999px;padding:8px 10px;font-size:12px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.11);white-space:nowrap}.pin.active{background:var(--ink);color:#fff;border-color:var(--ink)}.pin[data-city="基隆市"]{left:47%;top:7%}.pin[data-city="台北市"]{left:39%;top:14%}.pin[data-city="新北市"]{left:29%;top:18%}.pin[data-city="桃園市"]{left:31%;top:25%}.pin[data-city="新竹市"]{left:32%;top:32%}.pin[data-city="苗栗縣"]{left:34%;top:38%}.pin[data-city="台中市"]{left:35%;top:46%}.pin[data-city="彰化縣"]{left:34%;top:54%}.pin[data-city="南投縣"]{left:49%;top:51%}.pin[data-city="雲林縣"]{left:34%;top:61%}.pin[data-city="嘉義市"]{left:34%;top:67%}.pin[data-city="台南市"]{left:34%;top:75%}.pin[data-city="高雄市"]{left:34%;top:84%}.pin[data-city="屏東縣"]{left:44%;top:91%}.pin[data-city="宜蘭縣"]{left:68%;top:28%}.pin[data-city="花蓮縣"]{left:69%;top:52%}.pin[data-city="台東縣"]{left:67%;top:76%}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin-right:4px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:10px}.count{font-size:13px;color:var(--muted)}.search{width:100%;border:1px solid var(--line);border-radius:14px;padding:13px 15px;font-size:16px;margin:14px 0;background:#fff}
+.citycats{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.mini{font-size:12px;padding:8px 11px}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{border:1px solid var(--line);border-radius:17px;padding:14px;background:#fff}.card-top{display:flex;justify-content:space-between;gap:8px}.badge{display:inline-block;background:var(--soft);color:var(--accent);border-radius:999px;padding:4px 8px;font-size:11px}.type{font-size:11px;color:var(--muted)}.card h3{font-size:15px;margin:8px 0 6px}.card p{font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 9px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button,.actions a{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px;font-size:11px;text-decoration:none;color:var(--ink);cursor:pointer}.actions button.on{background:#f0e4e1;color:#7d4f4c;border-color:#ddc5c1}.actions button.visited.on{background:#e5ede2;color:#50634c;border-color:#c8d5c3}.empty{text-align:center;padding:60px 10px;color:var(--muted)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.map-panel{min-height:500px}.map{height:400px;width:250px}.cards{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.wrap{padding:10px}.panel{border-radius:18px}.cards{grid-template-columns:1fr}.map{height:390px;width:240px}.map-panel{min-height:480px}}
+</style></head>
+<body>
+<header><div class="hero"><div class="ey">OUR SAVED PLACES · IG 🐑🫂</div><h1>🗺️ 我們的台灣旅遊地圖</h1><p>一起收藏的美食與景點，變成我們下一趟旅行的地圖。</p></div></header>
+<main class="wrap">
+<div class="toolbar" id="toolbar"><button class="btn active" data-cat="all">全部</button><button class="btn" data-cat="美食">🍜 美食</button><button class="btn" data-cat="景點">📍 景點</button><button class="btn" data-cat="住宿">🏨 住宿</button><button class="btn" data-cat="visited">❤️ 已去過</button><button class="btn" data-cat="wish">⭐ 想去</button></div>
+<div class="layout">
+<section class="panel map-panel"><h2 class="panel-title">台灣地圖</h2><div class="sub">點一下縣市，就看這裡的 IG 推薦。</div><div class="map"><div class="island"></div>
+<button class="pin" data-city="基隆市">基隆</button><button class="pin" data-city="台北市">台北</button><button class="pin" data-city="新北市">新北</button><button class="pin" data-city="桃園市">桃園</button><button class="pin" data-city="新竹市">新竹</button><button class="pin" data-city="苗栗縣">苗栗</button><button class="pin" data-city="台中市">台中</button><button class="pin" data-city="彰化縣">彰化</button><button class="pin" data-city="南投縣">南投</button><button class="pin" data-city="雲林縣">雲林</button><button class="pin" data-city="嘉義市">嘉義</button><button class="pin" data-city="台南市">台南</button><button class="pin" data-city="高雄市">高雄</button><button class="pin" data-city="屏東縣">屏東</button><button class="pin" data-city="宜蘭縣">宜蘭</button><button class="pin" data-city="花蓮縣">花蓮</button><button class="pin" data-city="台東縣">台東</button></div>
+<div class="legend"><span>📍 點縣市</span><span>🍜 美食</span><span>📍 景點</span><span>❤️ 已去過</span><span>⭐ 想去</span></div></section>
+<section class="panel"><div class="head"><div><h2 class="panel-title" id="title">全部珍藏</h2><div class="sub">🐑🫂 IG 珍藏</div></div><div class="count" id="count"></div></div>
+<input class="search" id="search" placeholder="搜尋店家、景點、IG 帳號…"><div class="citycats" id="citycats"></div><div class="cards" id="cards"></div></section>
+</div></main>
+<script>
+(async()=>{
+const items=await fetch('data.json').then(r=>r.json()).then(x=>x.items);
+let city='all',cat='all',q='';
+const state=JSON.parse(localStorage.getItem('travelMapState')||'{}');
+const visited=new Set(state.visited||[]),wish=new Set(state.wish||[]);
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+function save(){localStorage.setItem('travelMapState',JSON.stringify({visited:[...visited],wish:[...wish]}))}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function filtered(){return items.filter(x=>(city==='all'||x.city===city)&&(cat==='all'||cat===x.category||(cat==='visited'&&visited.has(String(x.id)))||(cat==='wish'&&wish.has(String(x.id))))&&(!q||(`${x.caption} ${x.username} ${x.tags.join(' ')}`).toLowerCase().includes(q.toLowerCase())))}
+function render(){
+ const list=filtered();
+ $('#title').textContent=city==='all'?'全部珍藏':`${city} 推薦`;
+ $('#count').textContent=`${list.length} 筆`;
+ const cats=city==='all'?[]:[['all','全部'],['美食','🍜 美食'],['景點','📍 景點'],['住宿','🏨 住宿']];
+ $('#citycats').innerHTML=cats.map(([v,t])=>`<button class="btn mini ${cat===v?'active':''}" data-localcat="${v}">${t}</button>`).join('');
+ $('#cards').innerHTML=list.length?list.map(x=>{
+  const id=String(x.id),v=visited.has(id),w=wish.has(id);
+  return `<article class="card"><div class="card-top"><span class="badge">${esc(x.category)}</span><span class="type">${esc(x.type)}</span></div><h3>${esc(x.username?'@'+x.username:'IG 收藏')}</h3><p>${esc(x.caption||'沒有貼文文字')}</p><div class="actions"><button class="visited ${v?'on':''}" data-visit="${id}">${v?'✓ 已去過':'❤️ 去過'}</button><button class="${w?'on':''}" data-wish="${id}">${w?'★ 已收藏':'☆ 想去'}</button><a href="${esc(x.url)}" target="_blank" rel="noopener">開 IG ↗</a></div></article>`
+ }).join(''):'<div class="empty">目前沒有符合條件的收藏。<br>可以換個縣市或分類看看。</div>';
+}
+$('#toolbar').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;cat=b.dataset.cat;city='all';$$('#toolbar .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');$$('.pin').forEach(x=>x.classList.remove('active'));render()});
+document.addEventListener('click',e=>{
+ const pin=e.target.closest('.pin'); if(pin){city=pin.dataset.city;cat='all';$$('.pin').forEach(x=>x.classList.remove('active'));pin.classList.add('active');$$('#toolbar .btn').forEach(x=>x.classList.remove('active'));$('#toolbar [data-cat="all"]').classList.add('active');render();return}
+ const lc=e.target.closest('[data-localcat]');if(lc){cat=lc.dataset.localcat;render();return}
+ const v=e.target.closest('[data-visit]');if(v){const id=v.dataset.visit;visited.has(id)?visited.delete(id):visited.add(id);save();render();return}
+ const w=e.target.closest('[data-wish]');if(w){const id=w.dataset.wish;wish.has(id)?wish.delete(id):wish.add(id);save();render();return}
+});
+$('#search').addEventListener('input',e=>{q=e.target.value;render()});
+render();
+})();
+</script></body></html>
