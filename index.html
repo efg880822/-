@@ -33,6 +33,10 @@ h1{margin:0;font-size:clamp(28px,5vw,46px);letter-spacing:.04em}header p{margin:
 .v6-badge{position:fixed;right:12px;bottom:10px;z-index:999;font-size:11px;padding:5px 9px;border:1px solid var(--line);background:rgba(255,253,249,.94);border-radius:999px;color:var(--muted)}
 @media(max-width:600px){.city-checks{grid-template-columns:repeat(2,minmax(0,1fr))}.branch-row{grid-template-columns:1fr 1fr auto}}
 
+
+.backup-modal{position:fixed;inset:0;background:rgba(30,25,20,.45);z-index:10000;align-items:center;justify-content:center;padding:18px}
+.backup-box{position:relative;width:min(520px,100%);background:#fffdf9;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 15px 50px rgba(0,0,0,.18)}
+.backup-box h3{margin:0 0 10px}.backup-box p{line-height:1.65;color:var(--muted);font-size:14px}.backup-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.backup-actions button,.backup-file{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#faf6f1;cursor:pointer}.backup-close{position:absolute;right:12px;top:9px;border:0;background:transparent;font-size:26px;cursor:pointer;color:var(--muted)}
 </style></head>
 <body>
 <header><h1>我們的台灣旅遊地圖</h1><p>🐑🫂 IG 珍藏｜美食 × 景點 × 想去的地方</p></header>
@@ -165,4 +169,68 @@ $('#deletePlace').addEventListener('click',()=>{
   }
 });
 })();
-</script><div class="v6-badge">網站版本 V6</div></body></html>
+
+function v6ExportData(){
+  const payload={
+    format:"taiwan-couple-travel-map-backup",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    custom:typeof custom!=="undefined"?custom:[],
+    edits:typeof edits!=="undefined"?edits:{},
+    visited:typeof visited!=="undefined"?[...visited]:[],
+    wish:typeof wish!=="undefined"?[...wish]:[]
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="taiwan-travel-data-backup-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function v6ImportData(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const p=JSON.parse(reader.result);
+      if(!p || p.format!=="taiwan-couple-travel-map-backup") throw new Error("格式不正確");
+      if(!Array.isArray(p.custom)||typeof p.edits!=="object") throw new Error("資料內容不完整");
+      custom=p.custom;
+      edits=p.edits||{};
+      visited=new Set(Array.isArray(p.visited)?p.visited:[]);
+      wish=new Set(Array.isArray(p.wish)?p.wish:[]);
+      persist();
+      closeEditor&&closeEditor();
+      render();
+      alert("匯入完成！你的資料已恢復。");
+    }catch(err){alert("匯入失敗：這不是本網站的備份檔。");}
+  };
+  reader.readAsText(file);
+}
+
+
+(function(){
+  const b=document.getElementById("dataBackupBtn"),m=document.getElementById("dataBackupModal");
+  const c=document.getElementById("backupClose"),e=document.getElementById("exportData"),i=document.getElementById("importData");
+  if(b&&m){b.addEventListener("click",()=>{m.style.display="flex"});}
+  if(c&&m){c.addEventListener("click",()=>{m.style.display="none"});}
+  if(m){m.addEventListener("click",ev=>{if(ev.target===m)m.style.display="none"});}
+  if(e)e.addEventListener("click",v6ExportData);
+  if(i)i.addEventListener("change",ev=>{if(ev.target.files&&ev.target.files[0])v6ImportData(ev.target.files[0]);ev.target.value="";});
+})();
+
+</script><div class="v6-badge">網站版本 V6</div>
+<div id="dataBackupModal" class="backup-modal" style="display:none">
+  <div class="backup-box">
+    <button type="button" class="backup-close" id="backupClose">×</button>
+    <h3>💾 資料備份</h3>
+    <p>把你在網站上新增、編輯、縣市複選、分店、去過／想去等資料備份下來。之後更新網站時，可以再匯入回來。</p>
+    <div class="backup-actions">
+      <button type="button" id="exportData">📤 匯出我的資料</button>
+      <label class="backup-file">📥 匯入資料
+        <input id="importData" type="file" accept=".json,application/json" hidden>
+      </label>
+    </div>
+    <small>建議每次大量修改後先匯出一份 JSON 備份。</small>
+  </div>
+</div>
+</body></html>
