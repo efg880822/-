@@ -208,7 +208,7 @@ function v6ImportData(file){
 }
 
 
-(function(){
+document.addEventListener("DOMContentLoaded",function(){
   const b=document.getElementById("dataBackupBtn"),m=document.getElementById("dataBackupModal");
   const c=document.getElementById("backupClose"),e=document.getElementById("exportData"),i=document.getElementById("importData");
   if(b&&m){b.addEventListener("click",()=>{m.style.display="flex"});}
@@ -216,7 +216,7 @@ function v6ImportData(file){
   if(m){m.addEventListener("click",ev=>{if(ev.target===m)m.style.display="none"});}
   if(e)e.addEventListener("click",v6ExportData);
   if(i)i.addEventListener("change",ev=>{if(ev.target.files&&ev.target.files[0])v6ImportData(ev.target.files[0]);ev.target.value="";});
-})();
+});
 
 </script><div class="v6-badge">網站版本 V6</div>
 <div id="dataBackupModal" class="backup-modal" style="display:none">
