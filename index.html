@@ -87,23 +87,14 @@ const TRAVEL_DATA = [{"id":2,"url":"https://www.instagram.com/reel/DaKmgxpvQxb/"
   $$('.city-btn').forEach(b=>{const c=b.dataset.city; const n=c==='全部'?items().length:items().filter(x=>(Array.isArray(x.cities)?x.cities:[x.city]).includes(c)).length; const el=b.querySelector('b');if(el)el.textContent=n; b.classList.toggle('active',c===city);});
   $('#cards').innerHTML=list.length?list.map(x=>{const id=String(x.id),v=visited.has(id),w=wish.has(id),im=image(x);return `<article class="card"><div class="card-img">${im?`<img loading="lazy" src="${esc(im)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}<div class="img-fallback" style="display:${im?'none':'flex'}">${x.category==='美食'?'🍜':x.category==='住宿'?'🏨':'📍'}</div><span class="badge">${esc(x.category||'其他')}</span></div><div class="card-top"><span class="type">${esc(x.type||'')}</span></div><h3>${esc(title(x))}</h3><p>${esc(x.caption||x.note||'沒有貼文文字')}</p><div class="actions"><button class="visited ${v?'on':''}" data-visit="${id}">${v?'✓ 已去過':'❤️ 去過'}</button><button class="${w?'on':''}" data-wish="${id}">${w?'★ 已收藏':'☆ 想去'}</button><button class="edit-btn" data-edit="${id}">✏️ 編輯</button>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">開 IG ↗</a>`:''}</div></article>`}).join(''):'<div class="empty">目前沒有符合條件的收藏。<br>可以換個縣市或分類看看。</div>';
  }
- function openEditor(id){const x=items().find(z=>String(z.id)===String(id));if(!x)return;$('#editId').value=id;$('#editName').value=x.name||title(x);$('#editCategory').value=x.category||'其他';$$('#editCityChecks input').forEach(cb=>cb.checked=(Array.isArray(x.cities)?x.cities:[x.city]).includes(cb.value));$('#editAddress').value=x.address||'';$('#editImage').value=x.image||'';$('#editNote').value=x.note||'';$('#editUrl').value=x.url||'';$('#editor').classList.add('show');}
- function closeEditor(){$('#editor').classList.remove('show');}
- $$('.city-btn').forEach(b=>b.addEventListener('click',()=>{city=b.dataset.city;cat='全部';type='全部';$('#category').value='全部';$('#type').value='全部';render();}));
- $('#category').addEventListener('change',e=>{cat=e.target.value;render()});$('#type').addEventListener('change',e=>{type=e.target.value;render()});$('#search').addEventListener('input',e=>{q=e.target.value;render()});
- document.addEventListener('click',e=>{
-  const v=e.target.closest('[data-visit]');if(v){const id=v.dataset.visit;visited.has(id)?visited.delete(id):visited.add(id);persist();render();return}
-  const w=e.target.closest('[data-wish]');if(w){const id=w.dataset.wish;wish.has(id)?wish.delete(id):wish.add(id);persist();render();return}
-  const ed=e.target.closest('[data-edit]');if(ed){const idx=TRAVEL_DATA.findIndex(x=>String(x.id)===String(ed.dataset.edit));if(idx>=0)v6Open(idx);else openEditor(ed.dataset.edit);return}
-  if(e.target.id==='editorCancel')closeEditor();
- });
- $('#newPlace').addEventListener('click',()=>{const n={id:'new-'+Date.now(),url:'',type:'自建',city:'台北市',cities:['台北市'],category:'美食',caption:'',username:'',tags:[]};custom.push(n);persist();v6Open(-1);});
- $('#editorForm').addEventListener('submit',e=>{e.preventDefault();const id=$('#editId').value;const cities=[...document.querySelectorAll('#editCityChecks input:checked')].map(x=>x.value);edits[id]={name:$('#editName').value.trim(),cities,city:cities[0]||'待整理',category:$('#editCategory').value,address:$('#editAddress').value.trim(),image:$('#editImage').value.trim(),note:$('#editNote').value.trim(),url:$('#editUrl').value.trim()};persist();closeEditor();render();});
- $('#deletePlace').addEventListener('click',()=>{const id=$('#editId').value;if(custom.some(x=>String(x.id)===String(id))){custom=custom.filter(x=>String(x.id)!==String(id));delete edits[id];persist();closeEditor();render();}else if(confirm('這筆是原始 IG 收藏，要在網站隱藏它嗎？')){edits[id]={...(edits[id]||{}),hidden:true};persist();closeEditor();render();}});
- render();
+ function openEditor(id){
+  const idx=TRAVEL_DATA.findIndex(x=>String(x.id)===String(id));
+  if(idx>=0 && typeof v6Open==='function'){v6Open(idx);return;}
+  // fallback to the legacy editor only if the item cannot be found
+  const ed=document.getElementById('editor'); if(ed) ed.classList.add('show');
 })();
 
-// ===== V6.1 multi-city / branch support =====
+// ===== V6.2 multi-city / branch support =====
 const V6_CITIES = ["基隆市","台北市","新北市","桃園市","新竹市","新竹縣","苗栗縣","台中市","彰化縣","南投縣","雲林縣","嘉義市","嘉義縣","台南市","高雄市","屏東縣","宜蘭縣","花蓮縣","台東縣","澎湖縣","金門縣","連江縣"];
 let v6EditIndex = -1;
 
@@ -179,4 +170,4 @@ v6LoadLocal();
  </div>
 </div>
 
-<button onclick="v6Open(-1)" title="新增收藏" style="position:fixed;right:18px;bottom:18px;z-index:1000;border:0;background:#b86b4b;color:#fff;border-radius:999px;padding:14px 18px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.16)">＋ 新增</button><div id="v6-version-badge" style="position:fixed;right:10px;bottom:10px;z-index:900;font-size:11px;padding:6px 9px;border:1px solid #e9dfd5;background:rgba(255,253,249,.92);border-radius:999px;color:#8d7b6e;box-shadow:0 3px 12px rgba(0,0,0,.06)">V6.1</div></body></html>
+<button onclick="v6Open(-1)" title="新增收藏" style="position:fixed;right:18px;bottom:18px;z-index:1000;border:0;background:#b86b4b;color:#fff;border-radius:999px;padding:14px 18px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.16)">＋ 新增</button><div id="v6-version-badge" style="position:fixed;right:10px;bottom:10px;z-index:900;font-size:11px;padding:6px 9px;border:1px solid #e9dfd5;background:rgba(255,253,249,.92);border-radius:999px;color:#8d7b6e;box-shadow:0 3px 12px rgba(0,0,0,.06)">V6.2｜舊資料也可複選</div></body></html>
