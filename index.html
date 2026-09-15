@@ -37,6 +37,15 @@ h1{margin:0;font-size:clamp(28px,5vw,46px);letter-spacing:.04em}header p{margin:
 .backup-modal{position:fixed;inset:0;background:rgba(30,25,20,.45);z-index:10000;align-items:center;justify-content:center;padding:18px}
 .backup-box{position:relative;width:min(520px,100%);background:#fffdf9;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 15px 50px rgba(0,0,0,.18)}
 .backup-box h3{margin:0 0 10px}.backup-box p{line-height:1.65;color:var(--muted);font-size:14px}.backup-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.backup-actions button,.backup-file{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#faf6f1;cursor:pointer}.backup-close{position:absolute;right:12px;top:9px;border:0;background:transparent;font-size:26px;cursor:pointer;color:var(--muted)}
+
+.district-bar{display:none;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0 14px;padding:10px 12px;background:rgba(255,253,249,.92);border:1px solid var(--line);border-radius:14px}
+.district-label{font-weight:700;margin-right:2px}
+.district-btn{border:1px solid var(--line);background:#fffdf9;color:var(--ink);border-radius:999px;padding:7px 12px;font-size:13px;cursor:pointer}
+.district-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.district-btn small{opacity:.75;margin-left:3px}
+
+.manual-district-wrap select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fffdf9;font:inherit}
+.manual-district-wrap .manager-note{margin-top:6px;font-size:12px}
 </style></head>
 <body>
 <header><h1>我們的台灣旅遊地圖</h1><p>🐑🫂 IG 珍藏｜美食 × 景點 × 想去的地方</p></header>
@@ -65,11 +74,19 @@ h1{margin:0;font-size:clamp(28px,5vw,46px);letter-spacing:.04em}header p{margin:
 <button class="city-btn" data-city="連江縣"><span>連江</span><b>0</b></button></div></div></section>
 <div class="toolbar"><input id="search" class="search" placeholder="搜尋店家、景點、關鍵字…">
 <select id="category" class="filter"><option value="全部">全部</option><option value="美食">🍜 美食</option><option value="景點">📍 景點</option><option value="住宿">🏨 住宿</option><option value="其他">其他</option></select>
-<select id="type" class="filter"><option value="全部">全部形式</option><option value="Reel">Reels</option><option value="Post">貼文</option></select><button class="btn" id="newPlace">➕ 新增收藏</button><button class="btn" id="dataBackupBtn">💾 資料備份</button></div>
+<select id="type" class="filter"><option value="全部">全部形式</option><option value="Reel">Reels</option><option value="Post">貼文</option></select><button class="btn" id="newPlace">➕ 新增收藏</button><button class="btn" id="dataBackupBtn">💾 資料備份</button></div><div id="districtBar" class="district-bar" aria-label="行政區篩選"></div>
 <div id="stats" class="stats"></div><section id="cards" class="cards"></section></main>
 <div class="editor" id="editor"><div class="editor-box"><h2>✏️ 編輯旅遊收藏</h2><p class="manager-note">修改會先保存在這台裝置的瀏覽器。之後要同步到 GitHub，再把資料匯出即可。</p><form id="editorForm"><input type="hidden" id="editId"><div class="edit-grid"><label>名稱<input id="editName"></label>
 <div class="full"><label>縣市（可複選）</label>
-<div id="editCityChecks" class="city-checks"><label class="city-check"><input type="checkbox" value="基隆市">基隆市</label><label class="city-check"><input type="checkbox" value="台北市">台北市</label><label class="city-check"><input type="checkbox" value="新北市">新北市</label><label class="city-check"><input type="checkbox" value="桃園市">桃園市</label><label class="city-check"><input type="checkbox" value="新竹市">新竹市</label><label class="city-check"><input type="checkbox" value="新竹縣">新竹縣</label><label class="city-check"><input type="checkbox" value="苗栗縣">苗栗縣</label><label class="city-check"><input type="checkbox" value="台中市">台中市</label><label class="city-check"><input type="checkbox" value="彰化縣">彰化縣</label><label class="city-check"><input type="checkbox" value="南投縣">南投縣</label><label class="city-check"><input type="checkbox" value="雲林縣">雲林縣</label><label class="city-check"><input type="checkbox" value="嘉義市">嘉義市</label><label class="city-check"><input type="checkbox" value="嘉義縣">嘉義縣</label><label class="city-check"><input type="checkbox" value="台南市">台南市</label><label class="city-check"><input type="checkbox" value="高雄市">高雄市</label><label class="city-check"><input type="checkbox" value="屏東縣">屏東縣</label><label class="city-check"><input type="checkbox" value="宜蘭縣">宜蘭縣</label><label class="city-check"><input type="checkbox" value="花蓮縣">花蓮縣</label><label class="city-check"><input type="checkbox" value="台東縣">台東縣</label><label class="city-check"><input type="checkbox" value="澎湖縣">澎湖縣</label><label class="city-check"><input type="checkbox" value="金門縣">金門縣</label><label class="city-check"><input type="checkbox" value="連江縣">連江縣</label><label class="city-check"><input type="checkbox" value="其他">其他</label></div></div>
+<div id="editCityChecks" class="city-checks"><label class="city-check"><input type="checkbox" value="基隆市">基隆市</label><label class="city-check"><input type="checkbox" value="台北市">台北市</label><label class="city-check"><input type="checkbox" value="新北市">新北市</label><label class="city-check"><input type="checkbox" value="桃園市">桃園市</label><label class="city-check"><input type="checkbox" value="新竹市">新竹市</label><label class="city-check"><input type="checkbox" value="新竹縣">新竹縣</label><label class="city-check"><input type="checkbox" value="苗栗縣">苗栗縣</label><label class="city-check"><input type="checkbox" value="台中市">台中市</label><label class="city-check"><input type="checkbox" value="彰化縣">彰化縣</label><label class="city-check"><input type="checkbox" value="南投縣">南投縣</label><label class="city-check"><input type="checkbox" value="雲林縣">雲林縣</label><label class="city-check"><input type="checkbox" value="嘉義市">嘉義市</label><label class="city-check"><input type="checkbox" value="嘉義縣">嘉義縣</label><label class="city-check"><input type="checkbox" value="台南市">台南市</label><label class="city-check"><input type="checkbox" value="高雄市">高雄市</label><label class="city-check"><input type="checkbox" value="屏東縣">屏東縣</label><label class="city-check"><input type="checkbox" value="宜蘭縣">宜蘭縣</label><label class="city-check"><input type="checkbox" value="花蓮縣">花蓮縣</label><label class="city-check"><input type="checkbox" value="台東縣">台東縣</label><label class="city-check"><input type="checkbox" value="澎湖縣">澎湖縣</label><label class="city-check"><input type="checkbox" value="金門縣">金門縣</label><label class="city-check"><input type="checkbox" value="連江縣">連江縣</label><label class="city-check"><input type="checkbox" value="其他">其他</label></div>
+<div class="full manual-district-wrap">
+<label>主要行政區（可手動修正）
+<select id="editDistrict">
+<option value="">自動判斷</option>
+</select>
+</label>
+<div class="manager-note">若文案提到其他分店造成誤判，可以在這裡指定主要縣市的行政區。</div>
+</div></div>
 <div class="full"><label>分店／區域（可選）</label>
 <div id="editBranches"></div>
 <button type="button" id="addBranch" class="branch-add">＋ 新增分店</button></div><label>分類<select id="editCategory"><option>美食</option><option>景點</option><option>住宿</option><option>其他</option></select></label><label>地址<input id="editAddress" placeholder="例如：台南市中西區…"></label><label class="full">圖片網址<input id="editImage" placeholder="可貼圖片網址；留空會嘗試 IG 封面"></label><label class="full">備註<textarea id="editNote" placeholder="自己補充的資訊"></textarea></label><label class="full">Instagram 網址<input id="editUrl"></label></div><div class="edit-actions"><button type="button" id="deletePlace" class="danger">🗑️ 刪除／隱藏</button><button type="button" id="editorCancel">取消</button><button type="submit" class="save">💾 儲存修改</button></div></form></div></div>
@@ -84,6 +101,56 @@ TRAVEL_DATA.forEach(x=>{
 
  let saved=JSON.parse(localStorage.getItem(KEY)||'{}'), edits=saved.edits||{}, custom=saved.custom||[];
  let city='全部',cat='全部',type='全部',q='';
+ const V62_DISTRICTS={"臺北市": ["中正區", "大同區", "中山區", "松山區", "大安區", "萬華區", "信義區", "士林區", "北投區", "內湖區", "南港區", "文山區"], "新北市": ["板橋區", "三重區", "中和區", "永和區", "新莊區", "新店區", "樹林區", "鶯歌區", "三峽區", "淡水區", "汐止區", "瑞芳區", "土城區", "蘆洲區", "五股區", "泰山區", "林口區", "深坑區", "石碇區", "坪林區", "三芝區", "石門區", "八里區", "平溪區", "雙溪區", "貢寮區", "金山區", "萬里區", "烏來區"], "桃園市": ["桃園區", "中壢區", "平鎮區", "八德區", "楊梅區", "蘆竹區", "大溪區", "龜山區", "大園區", "觀音區", "新屋區", "龍潭區", "復興區"], "臺中市": ["中區", "東區", "南區", "西區", "北區", "北屯區", "西屯區", "南屯區", "太平區", "大里區", "霧峰區", "烏日區", "豐原區", "后里區", "石岡區", "東勢區", "和平區", "新社區", "潭子區", "大雅區", "神岡區", "大肚區", "沙鹿區", "龍井區", "梧棲區", "清水區", "大甲區", "外埔區", "大安區"], "臺南市": ["中西區", "東區", "南區", "北區", "安平區", "安南區", "永康區", "歸仁區", "新化區", "左鎮區", "玉井區", "楠西區", "南化區", "仁德區", "關廟區", "龍崎區", "官田區", "麻豆區", "佳里區", "西港區", "七股區", "將軍區", "學甲區", "北門區", "新營區", "後壁區", "白河區", "東山區", "六甲區", "下營區", "柳營區", "鹽水區", "善化區", "大內區", "山上區", "新市區", "安定區"], "高雄市": ["鹽埕區", "鼓山區", "左營區", "楠梓區", "三民區", "新興區", "前金區", "苓雅區", "前鎮區", "旗津區", "小港區", "鳳山區", "林園區", "大寮區", "大樹區", "仁武區", "鳥松區", "岡山區", "橋頭區", "燕巢區", "田寮區", "阿蓮區", "路竹區", "湖內區", "茄萣區", "永安區", "彌陀區", "梓官區", "旗山區", "美濃區", "六龜區", "甲仙區", "杉林區", "內門區", "茂林區", "桃源區", "那瑪夏區"], "基隆市": ["中正區", "七堵區", "暖暖區", "仁愛區", "中山區", "安樂區", "信義區"], "新竹市": ["東區", "北區", "香山區"], "嘉義市": ["東區", "西區"], "新竹縣": ["竹北市", "竹東鎮", "新埔鎮", "關西鎮", "湖口鄉", "新豐鄉", "芎林鄉", "橫山鄉", "北埔鄉", "寶山鄉", "峨眉鄉", "尖石鄉", "五峰鄉"], "苗栗縣": ["苗栗市", "苑裡鎮", "通霄鎮", "竹南鎮", "頭份市", "後龍鎮", "卓蘭鎮", "大湖鄉", "公館鄉", "銅鑼鄉", "南庄鄉", "頭屋鄉", "三義鄉", "西湖鄉", "造橋鄉", "三灣鄉", "獅潭鄉", "泰安鄉"], "彰化縣": ["彰化市", "員林市", "和美鎮", "鹿港鎮", "溪湖鎮", "二林鎮", "田中鎮", "北斗鎮", "花壇鄉", "芬園鄉", "大村鄉", "永靖鄉", "伸港鄉", "福興鄉", "秀水鄉", "埔鹽鄉", "埔心鄉", "社頭鄉", "二水鄉", "田尾鄉", "埤頭鄉", "芳苑鄉", "大城鄉", "竹塘鄉", "溪州鄉", "線西鄉"], "南投縣": ["南投市", "埔里鎮", "草屯鎮", "竹山鎮", "集集鎮", "名間鄉", "鹿谷鄉", "中寮鄉", "魚池鄉", "國姓鄉", "水里鄉", "信義鄉", "仁愛鄉"], "雲林縣": ["斗六市", "斗南鎮", "虎尾鎮", "西螺鎮", "土庫鎮", "北港鎮", "古坑鄉", "大埤鄉", "莿桐鄉", "林內鄉", "二崙鄉", "崙背鄉", "麥寮鄉", "東勢鄉", "褒忠鄉", "臺西鄉", "元長鄉", "四湖鄉", "口湖鄉", "水林鄉"], "嘉義縣": ["太保市", "朴子市", "布袋鎮", "大林鎮", "民雄鄉", "溪口鄉", "新港鄉", "六腳鄉", "東石鄉", "義竹鄉", "鹿草鄉", "水上鄉", "中埔鄉", "竹崎鄉", "梅山鄉", "番路鄉", "大埔鄉", "阿里山鄉"], "屏東縣": ["屏東市", "潮州鎮", "東港鎮", "恆春鎮", "萬丹鄉", "長治鄉", "麟洛鄉", "九如鄉", "里港鄉", "鹽埔鄉", "高樹鄉", "萬巒鄉", "內埔鄉", "竹田鄉", "新埤鄉", "枋寮鄉", "新園鄉", "崁頂鄉", "林邊鄉", "南州鄉", "佳冬鄉", "琉球鄉", "枋山鄉", "三地門鄉", "霧臺鄉", "瑪家鄉", "泰武鄉", "來義鄉", "春日鄉", "獅子鄉", "牡丹鄉", "車城鄉", "滿州鄉"], "宜蘭縣": ["宜蘭市", "羅東鎮", "蘇澳鎮", "頭城鎮", "礁溪鄉", "壯圍鄉", "員山鄉", "冬山鄉", "五結鄉", "三星鄉", "大同鄉", "南澳鄉"], "花蓮縣": ["花蓮市", "鳳林鎮", "玉里鎮", "新城鄉", "吉安鄉", "壽豐鄉", "光復鄉", "豐濱鄉", "瑞穗鄉", "富里鄉", "秀林鄉", "萬榮鄉", "卓溪鄉"], "臺東縣": ["臺東市", "成功鎮", "關山鎮", "卑南鄉", "鹿野鄉", "池上鄉", "東河鄉", "長濱鄉", "太麻里鄉", "大武鄉", "綠島鄉", "海端鄉", "延平鄉", "金峰鄉", "達仁鄉", "蘭嶼鄉"], "澎湖縣": ["馬公市", "湖西鄉", "白沙鄉", "西嶼鄉", "望安鄉", "七美鄉"], "金門縣": ["金城鎮", "金湖鎮", "金沙鎮", "金寧鄉", "烈嶼鄉", "烏坵鄉"], "連江縣": ["南竿鄉", "北竿鄉", "莒光鄉", "東引鄉"]};
+ let district='全部';
+
+ function districtKey(c){
+  if(!c) return '';
+  if(V62_DISTRICTS[c]) return c;
+  const alt=c.replaceAll('台','臺');
+  if(V62_DISTRICTS[alt]) return alt;
+  return c.replaceAll('臺','台');
+ }
+
+ function getDistrict(x){
+  if(city==='全部') return '';
+  const key=districtKey(city);
+  if(!V62_DISTRICTS[key]) return '';
+  const ds=V62_DISTRICTS[key];
+
+  // 手動指定優先：只套用到指定的主要縣市，避免多縣市收藏互相干擾。
+  if(x.district && (!x.districtCity || x.districtCity===city)){
+    const manual=ds.find(d=>String(x.district).includes(d));
+    if(manual) return manual;
+  }
+
+  // 分店資料次優先。
+  const branchText=Array.isArray(x.branches)
+   ? x.branches.filter(b=>b && b.city===city).map(b=>[b.district,b.address,b.name].filter(Boolean).join(' ')).join(' ')
+   : '';
+  const text=[x.address,x.caption,x.name,x.title,x.address_city,x.city,branchText].filter(Boolean).join(' ');
+  return ds.find(d=>text.includes(d))||'';
+ }
+
+ function renderDistrictBar(){
+  const bar=$('#districtBar');
+  if(!bar) return;
+  const key=districtKey(city);
+  if(!V62_DISTRICTS[key]){bar.style.display='none';bar.innerHTML='';return;}
+  const base=items().filter(x=>(Array.isArray(x.cities)?x.cities:[x.city]).includes(city));
+  const counts={}; V62_DISTRICTS[key].forEach(d=>counts[d]=0);
+  let unknown=0;
+  base.forEach(x=>{const d=getDistrict(x);if(d) counts[d]++; else unknown++;});
+  bar.style.display='flex';
+  bar.innerHTML='<span class="district-label">行政區：</span>'+
+   ['全部',...V62_DISTRICTS[key]].map(d=>{
+    const n=d==='全部'?base.length:counts[d];
+    return `<button type="button" class="district-btn ${district===d?'active':''}" data-district="${esc(d)}">${esc(d)} <small>${n}</small></button>`;
+   }).join('')+
+   (unknown?`<button type="button" class="district-btn ${district==='未分類'?'active':''}" data-district="未分類">未分類 <small>${unknown}</small></button>`:'');
+  bar.querySelectorAll('[data-district]').forEach(btn=>btn.addEventListener('click',()=>{district=btn.dataset.district;render();}));
+ }
+
  const visited=new Set(saved.visited||[]), wish=new Set(saved.wish||[]);
  const cities=["基隆市", "台北市", "新北市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣", "澎湖縣", "金門縣", "連江縣"];
  const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
@@ -92,8 +159,18 @@ TRAVEL_DATA.forEach(x=>{
  function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
  function title(x){if(x.name)return x.name;let t=(x.caption||'').replace(/\s+/g,' ').trim();let m=t.match(/(?:📍|🏠|《|「|【)([^\n《】」】]{2,42})/);return m?m[1]:(x.username?'@'+x.username:'IG 收藏');}
  function image(x){return x.image|| (x.shortcode?`https://www.instagram.com/${x.type==='Reel'?'reel':'p'}/${x.shortcode}/media/?size=l`:'');}
- function filtered(){return items().filter(x=>(city==='全部'||(Array.isArray(x.cities)?x.cities:[x.city]).includes(city))&&(cat==='全部'||x.category===cat)&&(type==='全部'||x.type===type)&&(!q||(`${title(x)} ${x.caption||''} ${x.address||''} ${x.username||''} ${(x.tags||[]).join(' ')}`).toLowerCase().includes(q.toLowerCase())))}
+ function filtered(){
+  return items().filter(x=>{
+   const cityOK=city==='全部'||(Array.isArray(x.cities)?x.cities:[x.city]).includes(city);
+   const catOK=cat==='全部'||x.category===cat;
+   const typeOK=type==='全部'||x.type===type;
+   const textOK=!q||(`${title(x)} ${x.caption||''} ${x.address||''} ${x.username||''} ${(x.tags||[]).join(' ')}`).toLowerCase().includes(q.toLowerCase());
+   const districtOK=district==='全部'||(district==='未分類'?!getDistrict(x):getDistrict(x)===district);
+   return cityOK&&catOK&&typeOK&&textOK&&districtOK;
+  });
+ }
  function render(){
+   renderDistrictBar();
   const list=filtered();
   $('#stats').textContent=`${city}｜${cat==='全部'?'':cat+'｜'}顯示 ${list.length} 筆`;
   $$('.city-btn').forEach(b=>{const c=b.dataset.city; const n=c==='全部'?items().length:items().filter(x=>(Array.isArray(x.cities)?x.cities:[x.city]).includes(c)).length; const el=b.querySelector('b');if(el)el.textContent=n; b.classList.toggle('active',c===city);});
@@ -119,6 +196,13 @@ function addBranchRow(cityName='', district=''){
   row.innerHTML=`<select>${cities.map(c=>`<option value="${esc(c)}" ${c===cityName?'selected':''}>${esc(c)}</option>`).join('')}</select><input placeholder="區域，例如：鳳山區" value="${esc(district)}"><button type="button" class="danger" onclick="this.parentElement.remove()">刪除</button>`;
   box.appendChild(row);
 }
+function refreshEditDistrictOptions(selectedCity, selectedDistrict=''){
+  const sel=$('#editDistrict');
+  if(!sel)return;
+  const ds=V62_DISTRICTS[districtKey(selectedCity)]||[];
+  sel.innerHTML='<option value="">自動判斷</option>'+ds.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  sel.value=ds.includes(selectedDistrict)?selectedDistrict:'';
+}
 function openEditor(id){
   const x=items().find(z=>String(z.id)===String(id)); if(!x)return;
   $('#editId').value=id;
@@ -130,11 +214,18 @@ function openEditor(id){
   $('#editUrl').value=x.url||'';
   const selected=cityList(x);
   $$('#editCityChecks input').forEach(cb=>cb.checked=selected.includes(cb.value));
+  refreshEditDistrictOptions(selected[0]||'', x.district||'');
   renderBranches(branchList(x));
   $('#editor').classList.add('show');
 }
 function closeEditor(){$('#editor').classList.remove('show');}
-$$('.city-btn').forEach(b=>b.addEventListener('click',()=>{city=b.dataset.city;cat='全部';type='全部';$('#category').value='全部';$('#type').value='全部';render();}));
+$$('#editCityChecks input').forEach(cb=>cb.addEventListener('change',()=>{
+  const selected=[...document.querySelectorAll('#editCityChecks input:checked')].map(x=>x.value);
+  const current=$('#editDistrict').value;
+  refreshEditDistrictOptions(selected[0]||'', current);
+}));
+
+$$('.city-btn').forEach(b=>b.addEventListener('click',()=>{city=b.dataset.city;district='全部';cat='全部';type='全部';$('#category').value='全部';$('#type').value='全部';render();}));
 $('#category').addEventListener('change',e=>{cat=e.target.value;render()});
 $('#type').addEventListener('change',e=>{type=e.target.value;render()});
 $('#search').addEventListener('input',e=>{q=e.target.value;render()});
@@ -157,7 +248,7 @@ $('#editorForm').addEventListener('submit',e=>{
   const id=$('#editId').value;
   const selected=[...document.querySelectorAll('#editCityChecks input:checked')].map(x=>x.value);
   const branches=[...document.querySelectorAll('#editBranches .branch-row')].map(r=>({city:r.children[0].value,district:r.children[1].value.trim()})).filter(x=>x.city||x.district);
-  edits[id]={...(edits[id]||{}),name:$('#editName').value.trim(),cities:selected,city:selected[0]||'待整理',branches,category:$('#editCategory').value,address:$('#editAddress').value.trim(),image:$('#editImage').value.trim(),note:$('#editNote').value.trim(),url:$('#editUrl').value.trim()};
+  edits[id]={...(edits[id]||{}),name:$('#editName').value.trim(),cities:selected,city:selected[0]||'待整理',branches,category:$('#editCategory').value,address:$('#editAddress').value.trim(),district:$('#editDistrict').value.trim(),districtCity:selected[0]||'',image:$('#editImage').value.trim(),note:$('#editNote').value.trim(),url:$('#editUrl').value.trim()};
   persist();closeEditor();render();
 });
 $('#deletePlace').addEventListener('click',()=>{
@@ -218,7 +309,7 @@ document.addEventListener("DOMContentLoaded",function(){
   if(i)i.addEventListener("change",ev=>{if(ev.target.files&&ev.target.files[0])v6ImportData(ev.target.files[0]);ev.target.value="";});
 });
 
-</script><div class="v6-badge">網站版本 V6</div>
+</script><div class="v6-badge">網站版本 V6.2 測試版（全台行政區修正版）（可手動指定行政區）</div>
 <div id="dataBackupModal" class="backup-modal" style="display:none">
   <div class="backup-box">
     <button type="button" class="backup-close" id="backupClose">×</button>
